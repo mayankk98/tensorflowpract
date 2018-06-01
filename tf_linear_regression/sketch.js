@@ -4,7 +4,7 @@ let y_val = [];
 let m, b;
 
 //Stochastic gradient descent for optimize function
-const learningRate = 0.5;
+const learningRate = 0.2;
 const optimizer = tf.train.sgd(learningRate);
 
 function setup() {
