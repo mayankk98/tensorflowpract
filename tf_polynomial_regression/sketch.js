@@ -1,10 +1,11 @@
 let x_val = [];
 let y_val = [];
 
-let m, b;
+let a, b, c, d;
+let dragging = false;
 
 //Stochastic gradient descent for optimize function
-const learningRate = 0.1;
+const learningRate = 0.2;
 const optimizer = tf.train.adam(learningRate);
 
 function setup() {
@@ -14,6 +15,7 @@ function setup() {
 	a = tf.variable(tf.scalar(random(-1,1)));
 	b = tf.variable(tf.scalar(random(-1,1)));
 	c = tf.variable(tf.scalar(random(-1,1)));
+	d = tf.variable(tf.scalar(random(-1,1)));
 
 }
 
@@ -26,27 +28,44 @@ function loss(pred, label) {
 }
 function predict(x) {
 	const xs = tf.tensor1d(x);
-	// y = ax^2 + bx + c;
-	const ys = xs.square().mul(a).add(xs.mul(b)).add(c);	
+	// y = ax^3 + bx^2 + cx + d;
+	const ys = xs.pow(tf.scalar(3)).mul(a)
+		.add(xs.square().mul(b))
+		.add(xs.mul(c))
+		.add(d);	
 	return ys;
 }
 
-function mouseDragged() {
-
-	let x = map(mouseX, 0, width, -1, 1);
-	let y = map(mouseY, 0, height, 1, -1);
-	x_val.push(x);
-	y_val.push(y);
+function mousePressed() {
+	dragging = true; 
 }
+
+function mouseReleased() {
+	dragging = false;
+}
+
+// function mouseDragged() {
+// 	let x = map(mouseX, 0, width, -1, 1);
+// 	let y = map(mouseY, 0, height, 1, -1);
+// 	x_val.push(x);
+// 	y_val.push(y);
+// }
 
 function draw() {
 
-	tf.tidy(() => {
-		if(x_val.length > 0) {
-			const ys = tf.tensor1d(y_val);
-			optimizer.minimize(() => loss(predict(x_val),ys));
-		}
-	});
+	if(dragging) {
+		let x = map(mouseX, 0, width, -1, 1);
+		let y = map(mouseY, 0, height, 1, -1);
+		x_val.push(x);
+		y_val.push(y);
+	} else {
+		tf.tidy(() => {
+			if(x_val.length > 0) {
+				const ys = tf.tensor1d(y_val);
+				optimizer.minimize(() => loss(predict(x_val),ys));
+			}
+		});
+}
 
 	background(0);
 
