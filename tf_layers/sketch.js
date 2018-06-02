@@ -39,15 +39,15 @@ model.compile({
 
 
 const xs = tf.tensor2d([
-	[0.1, 0.1],
-	[0.9, 0.9],
+	[0, 0],
 	[0.5, 0.5],
+	[1, 1]
 ]);
 
 const ys = tf.tensor2d([
-	[0.9],
+	[1],
 	[0.1],
-	[0.5],
+	[0]
 ]);
 
 
@@ -59,11 +59,12 @@ train().then(() => {
 });
 
 async function train () {
-	for(let i = 0; i < 1000; i++) {		
-		const response = await model.fit(xs, ys, {
+	for(let i = 0; i < 1000; i++) {	
+		const config = {
 			shuffle: true,
 			epoch: 10
-		});
+		}
+		const response = await model.fit(xs, ys, config);
 		console.log(response.history.loss[0]);
 	}
 }
